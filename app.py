@@ -5,6 +5,7 @@ import os
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for, flash
 from pymongo import MongoClient
 from werkzeug.security import check_password_hash, generate_password_hash
+from bson import ObjectId
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret-key")
@@ -160,8 +161,10 @@ def logout():
 @login_required()
 def dashboard():
     role = session.get("role")
+    current_user_id = ObjectId(session["user_id"])
+
     if role == "technician":
-        technician = db.technicians.find_one({"name": session.get("name")})
+        technician = db.technicians.find_one({"user_id": current_user_id})
         requests_data = list(
             db.service_requests.find(
                 {
@@ -171,9 +174,7 @@ def dashboard():
         )
         return render_template("technician_dashboard.html", requests_data=requests_data)
 
-    requests_data = list(
-        db.service_requests.find({"user_name": session.get("name")}).sort("created_at", -1)
-    )
+    requests_data = list(db.service_requests.find({"user_id": current_user_id}).sort("created_at", -1))
     return render_template(
         "user_dashboard.html",
         requests_data=requests_data,
@@ -198,6 +199,7 @@ def request_service():
 
     technician = find_technician(service, location)
     service_request = {
+        "user_id": ObjectId(session["user_id"]),
         "user_name": session.get("name"),
         "service": service,
         "issue_text": issue_text,
@@ -217,11 +219,20 @@ def request_service():
 @app.post("/request/<request_id>/status")
 @login_required("technician")
 def update_status(request_id):
-    from bson import ObjectId
+    technician = db.technicians.find_one({"user_id": ObjectId(session["user_id"])})
+    if not technician:
+        flash("Technician profile not found.", "error")
+        return redirect(url_for("dashboard"))
 
     new_status = request.form.get("status", "In Progress")
-    db.service_requests.update_one({"_id": ObjectId(request_id)}, {"$set": {"status": new_status}})
-    flash("Service status updated.", "success")
+    update_result = db.service_requests.update_one(
+        {"_id": ObjectId(request_id), "assigned_technician_id": technician["_id"]},
+        {"$set": {"status": new_status}},
+    )
+    if update_result.modified_count:
+        flash("Service status updated.", "success")
+    else:
+        flash("Unable to update status for this request.", "error")
     return redirect(url_for("dashboard"))
 
 

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="hero">
+  <h1>Get the right technician, faster.</h1>
+  <p>Use voice or text to describe your issue. Our assistant identifies the best service and assigns a technician nearby.</p>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('register') }}">Get Started</a>
+    <a class="btn secondary" href="{{ url_for('technician_register') }}">Join as Technician</a>
+  </div>
+</section>
+{% endblock %}

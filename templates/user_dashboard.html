@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="layout-2">
+  <section class="card">
+    <h2>Request a Service</h2>
+    <form method="POST" action="{{ url_for('request_service') }}" id="requestForm">
+      <label>Describe your issue</label>
+      <textarea name="issue_text" id="issueText" rows="4" placeholder="e.g., Water leaking under kitchen sink" required></textarea>
+      <div class="row">
+        <button type="button" class="btn secondary" id="voiceBtn">🎤 Voice Input</button>
+        <button type="button" class="btn" id="classifyBtn">Analyze with AI</button>
+      </div>
+
+      <label>Detected / Selected Service</label>
+      <select name="service" id="serviceSelect">
+        <option value="">Auto-detect</option>
+        {% for service in services %}
+          <option value="{{ service }}">{{ service }}</option>
+        {% endfor %}
+      </select>
+
+      <label>City</label>
+      <input name="location" placeholder="Enter your city" required />
+
+      <label>GPS coordinates (optional)</label>
+      <input name="gps" placeholder="lat,lng" />
+
+      <button type="submit" class="btn">Submit Request</button>
+    </form>
+  </section>
+
+  <section class="card">
+    <h2>Your Service Requests</h2>
+    {% if requests_data %}
+      <ul class="list">
+      {% for item in requests_data %}
+        <li>
+          <strong>{{ item.service }}</strong>
+          <p>{{ item.issue_text }}</p>
+          <small>Location: {{ item.location }} | Technician: {{ item.assigned_technician_name }} | Status: <span class="status">{{ item.status }}</span></small>
+        </li>
+      {% endfor %}
+      </ul>
+    {% else %}
+      <p>No requests submitted yet.</p>
+    {% endif %}
+  </section>
+</div>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

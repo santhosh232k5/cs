@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+  {% if mode == 'technician' %}
+    <h2>Technician Registration</h2>
+  {% else %}
+    <h2>User Registration</h2>
+  {% endif %}
+
+  <form method="POST">
+    <label>Full Name</label>
+    <input name="name" required />
+
+    <label>Email</label>
+    <input name="email" type="email" required />
+
+    {% if mode == 'technician' %}
+      <label>Phone</label>
+      <input name="phone" required />
+
+      <label>Service Specializations</label>
+      <div class="checkbox-grid">
+        {% for service in services %}
+          <label><input type="checkbox" name="services" value="{{ service }}" /> {{ service }}</label>
+        {% endfor %}
+      </div>
+
+      <label>Cities covered (comma separated)</label>
+      <input name="cities" placeholder="e.g., mumbai,pune" required />
+    {% endif %}
+
+    <label>Password</label>
+    <input name="password" type="password" required />
+
+    <button type="submit" class="btn">Create Account</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="card">
+  <h2>Assigned Jobs</h2>
+  {% if requests_data %}
+    <ul class="list">
+      {% for item in requests_data %}
+        <li>
+          <strong>{{ item.service }}</strong>
+          <p>{{ item.issue_text }}</p>
+          <small>Customer: {{ item.user_name }} | Location: {{ item.location }} | Current: {{ item.status }}</small>
+          <form method="POST" action="{{ url_for('update_status', request_id=item._id) }}" class="row">
+            <select name="status">
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+            </select>
+            <button class="btn" type="submit">Update</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No assigned jobs right now.</p>
+  {% endif %}
+</section>
+{% endblock %}

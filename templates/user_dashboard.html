@@ -1,100 +1,50 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="dashboard-header">
-  <div>
-    <h1>Hello {{ session.get('name') }}, book your next service</h1>
-    <p>Track booking lifecycle in real time and contact your assigned worker instantly.</p>
-  </div>
-  <button class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-</section>
-
-<div class="dashboard-grid">
+<div class="layout-2">
   <section class="card">
-    <h3>New Booking</h3>
-    <form method="POST" action="{{ url_for('request_service') }}" id="bookingForm" class="form-grid">
+    <h2>Request a Service</h2>
+    <form method="POST" action="{{ url_for('request_service') }}" id="requestForm">
       <label>Describe your issue</label>
-      <textarea name="issue_text" id="issueText" rows="3" placeholder="Water leak, AC not cooling..." required></textarea>
+      <textarea name="issue_text" id="issueText" rows="4" placeholder="e.g., Water leaking under kitchen sink" required></textarea>
       <div class="row">
-        <button type="button" class="btn ghost" id="voiceBtn">🎤 Voice</button>
+        <button type="button" class="btn secondary" id="voiceBtn">🎤 Voice Input</button>
         <button type="button" class="btn" id="classifyBtn">Analyze with AI</button>
       </div>
 
-      <label>Service Category</label>
+      <label>Detected / Selected Service</label>
       <select name="service" id="serviceSelect">
-        <option value="">Auto detect</option>
-        {% for service in services %}<option value="{{ service }}">{{ service }}</option>{% endfor %}
+        <option value="">Auto-detect</option>
+        {% for service in services %}
+          <option value="{{ service }}">{{ service }}</option>
+        {% endfor %}
       </select>
 
       <label>City</label>
-      <input name="location" required />
-      <label>Address</label>
-      <input name="address" placeholder="Street, landmark" required />
-      <label>GPS (optional)</label>
+      <input name="location" placeholder="Enter your city" required />
+
+      <label>GPS coordinates (optional)</label>
       <input name="gps" placeholder="lat,lng" />
-      <label>Estimated budget</label>
-      <input type="number" name="estimated_price" min="200" value="699" />
-      <button type="submit" class="btn">Confirm Booking</button>
+
+      <button type="submit" class="btn">Submit Request</button>
     </form>
   </section>
 
   <section class="card">
-    <h3>Upcoming Bookings</h3>
-    <div class="booking-list">
-      {% for item in upcoming %}
-      <article class="booking-card">
-        <header>
-          <h4>{{ item.service }}</h4>
-          <span class="status-pill">{{ item.status }}</span>
-        </header>
-        <p>{{ item.issue_text }}</p>
-        <p class="subtle">{{ item.city }} • {{ item.address }}</p>
-
-        {% if item.worker_details %}
-        <div class="worker-meta">
-          <img src="{{ item.worker_details.profile_photo }}" alt="worker" />
-          <div>
-            <strong>{{ item.worker_details.name }}</strong>
-            <p>⭐ {{ item.worker_details.rating }} • 📞 {{ item.worker_details.phone }}</p>
-            <p>ETA: {{ item.eta_minutes }} mins</p>
-          </div>
-        </div>
-        {% endif %}
-
-        <div class="status-tracker">
-          {% for s in status_flow %}
-            <span class="{{ 'active' if s == item.status else '' }}">{{ s }}</span>
-          {% endfor %}
-        </div>
-
-        {% if item.status != 'Completed' and item.status != 'Cancelled' %}
-        <form method="POST" action="{{ url_for('cancel_booking', booking_id=item._id) }}">
-          <button class="btn danger" type="submit">Cancel Booking</button>
-        </form>
-        {% endif %}
-      </article>
-      {% else %}
-        <div class="skeleton">No active bookings yet.</div>
+    <h2>Your Service Requests</h2>
+    {% if requests_data %}
+      <ul class="list">
+      {% for item in requests_data %}
+        <li>
+          <strong>{{ item.service }}</strong>
+          <p>{{ item.issue_text }}</p>
+          <small>Location: {{ item.location }} | Technician: {{ item.assigned_technician_name }} | Status: <span class="status">{{ item.status }}</span></small>
+        </li>
       {% endfor %}
-    </div>
+      </ul>
+    {% else %}
+      <p>No requests submitted yet.</p>
+    {% endif %}
   </section>
 </div>
-
-<section class="card">
-  <h3>Booking History</h3>
-  <div class="history-grid">
-    {% for item in history %}
-      <div class="history-item">
-        <strong>{{ item.service }}</strong>
-        <p>{{ item.city }} • ₹{{ item.price }}</p>
-        <span class="status-pill complete">Completed</span>
-      </div>
-    {% else %}
-      <div class="skeleton">Completed services will appear here.</div>
-    {% endfor %}
-  </div>
-</section>
-{% endblock %}
-
-{% block scripts %}
 <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
 {% endblock %}

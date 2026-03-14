@@ -1,53 +1,27 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="dashboard-header">
-  <div>
-    <h1>Worker Control Center</h1>
-    <p>Manage assigned jobs, update live status, and track earnings.</p>
-  </div>
-</section>
-
-<div class="stats-row">
-  <div class="mini-card"><h4>Total Earnings</h4><p>₹{{ earnings }}</p></div>
-  <div class="mini-card"><h4>Rating</h4><p>⭐ {{ worker.rating if worker else 4.7 }}</p></div>
-  <div class="mini-card"><h4>Coverage</h4><p>{{ (worker.cities|join(', ')) if worker else '-' }}</p></div>
-</div>
-
 <section class="card">
-  <h3>Assigned Jobs</h3>
-  <div class="booking-list">
-    {% for item in jobs %}
-      <article class="booking-card">
-        <header>
-          <h4>{{ item.service }}</h4>
-          <span class="status-pill">{{ item.status }}</span>
-        </header>
-        <p>{{ item.issue_text }}</p>
-        <p class="subtle">Customer: {{ item.user_name }} • {{ item.city }} • {{ item.address }}</p>
-
-        {% if item.status == 'Worker Assigned' %}
-        <div class="row">
-          <form method="POST" action="{{ url_for('worker_accept_job', booking_id=item._id) }}">
-            <button class="btn" type="submit">Accept Job</button>
+  <h2>Assigned Jobs</h2>
+  {% if requests_data %}
+    <ul class="list">
+      {% for item in requests_data %}
+        <li>
+          <strong>{{ item.service }}</strong>
+          <p>{{ item.issue_text }}</p>
+          <small>Customer: {{ item.user_name }} | Location: {{ item.location }} | Current: {{ item.status }}</small>
+          <form method="POST" action="{{ url_for('update_status', request_id=item._id) }}" class="row">
+            <select name="status">
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Completed</option>
+            </select>
+            <button class="btn" type="submit">Update</button>
           </form>
-          <form method="POST" action="{{ url_for('worker_reject_job', booking_id=item._id) }}">
-            <button class="btn danger" type="submit">Reject Job</button>
-          </form>
-        </div>
-        {% endif %}
-
-        <form method="POST" action="{{ url_for('update_status', booking_id=item._id) }}" class="row">
-          <select name="status">
-            {% for status in updatable_statuses %}
-              <option value="{{ status }}">{{ status }}</option>
-            {% endfor %}
-          </select>
-          <button class="btn" type="submit">Update Status</button>
-        </form>
-      </article>
-    {% else %}
-      <div class="skeleton">No jobs assigned yet.</div>
-    {% endfor %}
-  </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No assigned jobs right now.</p>
+  {% endif %}
 </section>
 {% endblock %}

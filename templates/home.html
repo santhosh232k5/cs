@@ -1,39 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="hero premium-gradient">
-  <div>
-    <p class="eyebrow">Urban-style service marketplace</p>
-    <h1>Book trusted pros for every home task.</h1>
-    <p>Cleaning, repair, electrical, plumbing and more—delivered with real-time tracking and reliable workers.</p>
-    <form class="search-bar" action="{{ url_for('register') }}">
-      <input type="text" placeholder="Search services like AC repair, deep cleaning..." />
-      <button class="btn" type="submit">Find Service</button>
-    </form>
-  </div>
-  <div class="hero-card">
-    <h3>Popular today</h3>
-    <ul>
-      <li>Home Deep Cleaning</li>
-      <li>AC service & gas refill</li>
-      <li>Bathroom plumbing fix</li>
-    </ul>
-  </div>
-</section>
-
-<section>
-  <div class="section-head">
-    <h2>Service Categories</h2>
-    <p>Choose from premium verified professionals.</p>
-  </div>
-  <div class="category-grid">
-    {% set icons = {'Cleaning':'🧹','Plumbing':'🚰','Electrical repair':'⚡','Appliance repair':'❄️','Beauty Services':'💄','Home Repair':'🛠️'} %}
-    {% for name in ['Cleaning','Plumbing','Electrical repair','Appliance repair','Beauty Services','Home Repair'] %}
-    <a class="category-card" href="{{ url_for('register') }}">
-      <span class="icon">{{ icons.get(name,'✨') }}</span>
-      <h3>{{ name }}</h3>
-      <p>Verified worker • instant booking</p>
-    </a>
-    {% endfor %}
+<section class="hero">
+  <h1>Get the right technician, faster.</h1>
+  <p>Use voice or text to describe your issue. Our assistant identifies the best service and assigns a technician nearby.</p>
+  <div class="actions">
+    <a class="btn" href="{{ url_for('register') }}">Get Started</a>
+    <a class="btn secondary" href="{{ url_for('technician_register') }}">Join as Technician</a>
   </div>
 </section>
 {% endblock %}

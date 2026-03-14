@@ -1,17 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="auth-shell">
-  <div class="card auth-card">
-    <h2>Welcome back</h2>
-    <p>Login to manage your bookings and worker assignments.</p>
-    <form method="POST" class="form-grid">
-      <label>Email</label>
-      <input name="email" type="email" required />
-      <label>Password</label>
-      <input name="password" type="password" required />
-      <button type="submit" class="btn">Sign in</button>
-    </form>
-    <p class="subtle">New user? <a href="{{ url_for('register') }}">Create account</a></p>
-  </div>
-</section>
+<div class="card">
+  <h2>Login</h2>
+  <form method="POST">
+    <label>Email</label>
+    <input name="email" type="email" required />
+    <label>Password</label>
+    <input name="password" type="password" required />
+    <button type="submit" class="btn">Sign in</button>
+  </form>
+</div>
 {% endblock %}

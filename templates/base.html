@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Home Service Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+</head>
+<body>
+  <header class="navbar sticky glass">
+    <a href="{{ url_for('home') }}" class="brand">Smart<span>Home</span></a>
+    <nav class="nav-links">
+      <a href="{{ url_for('home') }}">Home</a>
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      {% endif %}
+    </nav>
+
+    <div class="nav-actions">
+      {% if session.get('user_id') %}
+      <div class="notification-wrap" id="notificationWrap">
+        <button id="notificationBtn" class="icon-btn" aria-label="Notifications">🔔 <span id="notificationCount" class="badge">0</span></button>
+        <div id="notificationPanel" class="notification-panel hidden">
+          <div class="panel-header">
+            <h4>Notifications</h4>
+            <button id="markReadBtn" class="text-btn">Mark all as read</button>
+          </div>
+          <ul id="notificationList"></ul>
+        </div>
+      </div>
+      <a href="{{ url_for('logout') }}" class="btn ghost">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn ghost">Login</a>
+        <a href="{{ url_for('register') }}" class="btn">Sign Up</a>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="container page-fade">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="toast {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <div id="toastStack" class="toast-stack"></div>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

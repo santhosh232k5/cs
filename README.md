@@ -1,6 +1,6 @@
 # Smart Home Service Assistant
 
-A premium Urban Company-style marketplace for home and shop services with auto worker assignment, booking lifecycle tracking, and live notifications.
+this web application is used for home and shop services with auto worker assignment, booking lifecycle tracking, and live notifications.
 
 ## What is included
 
